@@ -3,17 +3,20 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class BlogController extends AbstractController
 {
-    #[Route('/blog', name: 'app_blog')]
-    public function index(): JsonResponse
+    #[Route('/', name: 'app_home')]
+    public function index(): Response
     {
-        return $this->json([
-            'message' => 'Welcome to your new controller!',
-            'path' => 'src/Controller/BlogController.php',
-        ]);
+
+        $posts = [
+            ['title' => 'Primo post', 'slug' => 'primo-post'],
+            ['title' => 'Secondo post', 'slug' => 'secondo-post'],
+        ];
+
+        return $this->render('blog/index.html.twig', ['posts' => $posts,]);
     }
 }

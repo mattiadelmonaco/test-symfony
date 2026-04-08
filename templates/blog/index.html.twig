@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>SymBlog</title>
+</head>
+<body>
+    <h1>SymBlog</h1>
+
+    {% for post in posts %}
+        <div>
+            <h2>{{ post.title }}</h2>
+            <a href="#">Leggi</a>
+        </div>
+    {% endfor %}
+</body>
+</html>
