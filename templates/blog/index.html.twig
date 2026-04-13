@@ -8,7 +8,7 @@
     {% for post in posts %}
         <div>
             <h2>{{ post.title }}</h2>
-            <a href="#">Leggi</a>
+            <a href="{{path('app_post_show', {slug: post.slug})}}">Leggi</a>
         </div>
     {% endfor %}
 {% endblock %}
