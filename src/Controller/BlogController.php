@@ -6,6 +6,7 @@ use App\Entity\Post;
 use App\Form\PostType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use App\Repository\UserRepository;
 use App\Repository\PostRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\DateImmutableType;
@@ -24,16 +25,8 @@ final class BlogController extends AbstractController
         return $this->render('blog/index.html.twig', ['posts' => $posts,]);
     }
 
-    #[Route('post/{slug}', name: 'app_post_show')]
-    public function show(string $slug, PostRepository $postRepository): Response
-    {
-        $post = $postRepository->findOneBy(['slug' => $slug]);
-
-        return $this->render('blog/show.html.twig', ['post' => $post]);
-    }
-
     #[Route('/post/new', name: 'app_post_new')]
-    public function new(Request $request, EntityManagerInterface $em): Response
+    public function new(Request $request, EntityManagerInterface $em, UserRepository $userRepository): Response
     {
         $post = new Post;
         $form = $this->createForm(PostType::class, $post);
@@ -43,6 +36,7 @@ final class BlogController extends AbstractController
             $post->setSlug(strtolower(str_replace(' ', '-', $post->getTitle())));
             $post->setCreatedAt(new \DateTimeImmutable());
             $post->setIsPublished(false);
+            $post->setAuthor($userRepository->find(1));
             $em->persist($post);
             $em->flush();
 
@@ -50,5 +44,13 @@ final class BlogController extends AbstractController
         }
 
         return $this->render('blog/new.html.twig', ['form' => $form]);
+    }
+
+    #[Route('post/{slug}', name: 'app_post_show')]
+    public function show(string $slug, PostRepository $postRepository): Response
+    {
+        $post = $postRepository->findOneBy(['slug' => $slug]);
+
+        return $this->render('blog/show.html.twig', ['post' => $post]);
     }
 }
