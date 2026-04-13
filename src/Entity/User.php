@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -19,6 +21,14 @@ class User
 
     #[ORM\Column(length: 180)]
     private ?string $email = null;
+
+    #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'author')]
+    private Collection $posts;
+
+    public function __construct()
+    {
+        $this->posts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -47,5 +57,10 @@ class User
         $this->email = $email;
 
         return $this;
+    }
+
+    public function getPosts(): Collection
+    {
+        return $this->posts;
     }
 }
