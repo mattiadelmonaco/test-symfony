@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use App\Service\SluggerService;
 
 final class BlogController extends AbstractController
 {
@@ -28,14 +29,14 @@ final class BlogController extends AbstractController
 
     #[IsGranted('ROLE_USER')]
     #[Route('/post/new', name: 'app_post_new')]
-    public function new(Request $request, EntityManagerInterface $em, UserRepository $userRepository): Response
+    public function new(Request $request, EntityManagerInterface $em, SluggerService $slugger): Response
     {
         $post = new Post;
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $post->setSlug(strtolower(str_replace(' ', '-', $post->getTitle())));
+            $post->setSlug($slugger->slugify($post->getTitle()));
             $post->setCreatedAt(new \DateTimeImmutable());
             $post->setIsPublished(false);
             $post->setAuthor($this->getUser());
