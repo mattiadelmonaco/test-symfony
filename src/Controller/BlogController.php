@@ -13,6 +13,7 @@ use Doctrine\DBAL\Types\DateImmutableType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 final class BlogController extends AbstractController
 {
@@ -25,6 +26,7 @@ final class BlogController extends AbstractController
         return $this->render('blog/index.html.twig', ['posts' => $posts,]);
     }
 
+    #[IsGranted('ROLE_USER')]
     #[Route('/post/new', name: 'app_post_new')]
     public function new(Request $request, EntityManagerInterface $em, UserRepository $userRepository): Response
     {
@@ -36,7 +38,7 @@ final class BlogController extends AbstractController
             $post->setSlug(strtolower(str_replace(' ', '-', $post->getTitle())));
             $post->setCreatedAt(new \DateTimeImmutable());
             $post->setIsPublished(false);
-            $post->setAuthor($userRepository->find(1));
+            $post->setAuthor($this->getUser());
             $em->persist($post);
             $em->flush();
 
